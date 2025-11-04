@@ -9,17 +9,22 @@ from src.tool import load_image,newbluegreen,newred,ACES,\
     ada_color,High_pass,Overlay,maxmap
 from src.seathru import run_pipeline
 from src.contrast import integral_contrast
-img_path = ''
-depth_path = ''
-result_path= ''
+img_path = '/home/esteban-dreau-darizcuren/doctorat/code/jointid_test/data/'
+depth_path = '/home/esteban-dreau-darizcuren/doctorat/code/jointid_test/depth_normalized'
+result_path= 'results'
 data = os.listdir(img_path)
+
 
 
 for i in range(len(data)):
     path = img_path+data[i]
     print(data[i])
-    depth_file = depth_path + data[i][:-4] + '.npy'
-    depth = np.array(np.load(depth_file)).astype(np.float32)
+    # depth_file = depth_path + data[i][:-4] + '.npy'
+    depth_file = depth_path + "/" + data[i]
+    print(depth_file)
+    print("################################")
+    # depth = np.array(np.load(depth_file)).astype(np.float32)
+    depth = cv2.imread(depth_file, cv2.IMREAD_UNCHANGED).astype(np.float32)
     i0 = load_image(path)
     (win,hei,_)=i0.shape
     depth = np.resize(depth,(win,hei))
@@ -37,6 +42,8 @@ for i in range(len(data)):
     i1 = np.maximum(i1, 0)
     i0 = np.maximum(i0, 0)
     i1 = maxmap(i0, i1, 1.2)
+    if i1.shape[2] == 4:
+        i1 = i1[:, :, :3]
     i1 = np.float32(integral_contrast(i1,20,20))
     i1 = np.float32(np.minimum(np.maximum(i1, 0), 1))
     i1 = ada_color(i1)

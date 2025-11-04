@@ -249,12 +249,14 @@ def refine_neighborhood_map(nmap, min_size = 50, radius = 3):
                     refined_nmap[x, y] = 0
     refined_nmap = closing(refined_nmap, square(radius))
     return refined_nmap, num_labels - 1
+
 def estimate_wideband_attentuation(depths, illum, radius = 6, max_val = 10.0):
     eps = 1E-8
     BD = np.minimum(max_val, -np.log(illum + eps) / (np.maximum(0, depths) + eps))
     mask = np.where(np.logical_and(depths > eps, illum > eps), 1, 0)
     refined_attenuations = denoise_bilateral(closing(np.maximum(0, BD * mask), disk(radius)))
     return refined_attenuations, []
+
 def run_pipeline(rawimg, rawdepth,p,f,l,ep):
     img = np.array(Image.fromarray(rawimg).resize((32,32)))
     depths = np.resize(rawdepth,(32,32))

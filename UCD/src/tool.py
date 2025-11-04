@@ -5,6 +5,7 @@ import cv2
 from skimage.filters import gaussian
 from skimage.color import rgb2lab,rgb2gray,lab2rgb
 import math
+
 def load_image(img_fname1):
     img = np.array(Image.open(img_fname1))
     img = np.array(img).astype(np.float32)
