@@ -2,5 +2,7 @@
 .venv/
 venv/
 env/
-
+.python-version
+/results/
 /__pycache__
+

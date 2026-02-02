@@ -152,7 +152,12 @@ def recover_image(img, depths, B, beta_D):
     D_max = np.max(D)
     if D_min < 0:
         D = scale(D) * (D_max - D_min)
-    res = D * np.exp(beta_D[:,:,0] * depths)
+    # Redimensionner beta_D si sa taille diffère
+    if beta_D.shape[:2] != depths.shape:
+        beta_D_resized = cv2.resize(beta_D[:,:,0], (depths.shape[1], depths.shape[0]), interpolation=cv2.INTER_LINEAR)
+    else:
+        beta_D_resized = beta_D[:,:,0]
+    res = D * np.exp(beta_D_resized * depths)
     return res
 
 def wbalance_gw(img):
@@ -269,6 +274,8 @@ def run_pipeline(rawimg, rawdepth,p,f,l,ep):
     refined_beta_D_r, rawBD,coefsR2 = refine_wideband_attentuation(depths,rawdepth, illR,beta_D_r,min_depth_fraction=0, l=l)
     B = np.stack([rawBr], axis=2)
     beta_D = np.stack([rawBD], axis=2)
+    # print("DEBUG inside run_pipeline → rawimg:", rawimg.shape, "rawdepth:", rawdepth.shape)
+
     res = recover_image(rawimg, rawdepth, B, beta_D)
     return res,coefsR1,coefsR2
 
